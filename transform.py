@@ -80,8 +80,7 @@ def main(source_name, const='W21'):
 
     print(f'D = {dist} kpc')
     print(f'(l, b) = ({l_gal*180/np.pi:.4f} deg, {b_gal*180/np.pi:.4f} deg)')
-    print('\nObserved proper motion of the source w.r.t. its environment:')
-    print(f'\u03BC_l = {mul:.3f} mas/yr, \u03BC_b = {mub:.3f} mas/yr')
+    print('\nObserved proper motion: \u03BC_l = {mul:.3f} mas/yr, \u03BC_b = {mub:.3f} mas/yr')
 
     A, B, C, K, U, V, W = oort_constants(const)
 
@@ -95,8 +94,7 @@ def main(source_name, const='W21'):
     mu_l_corr = mul - mu_l0
     mu_b_corr = mub - mu_b0
 
-    print('\nCorrected proper motion of the source w.r.t. its environment:')
-    print(f'\u03BC_l = {mu_l_corr:.3f} mas/yr, \u03BC_b = {mu_b_corr:.3f} mas/yr')
+    print('Corrected proper motion: \u03BC_l = {mu_l_corr:.1u} mas/yr, \u03BC_b = {mu_b_corr:.1u} mas/yr')
 
     #Calculate mu_ra, mu_dec, and V_tan. We use the transpose of the transformation matrix. 
     Agt = Ag.T
@@ -123,20 +121,23 @@ def main(source_name, const='W21'):
         - (-Agt[2, 0] * cos_l * cos_b + Agt[2, 1] * sin_l * sin_b - Agt[2, 2] * cos_b) * mu_b_corr
     )
 
+    print(f'\nObserved proper motion: \u03BC_ra = {pm_ra:.1u} mas/yr, \u03BC_dec = {pm_dec:.1u} mas/yr')
+    print(f'Corrected proper motion: \u03BC_ra = {mu_ra_corr:.1u} mas/yr, \u03BC_dec = {mu_dec_corr:.1u} mas/yr')
+
     # Calculate proper motion angle before and after correction for Galactic rotation 
     angle = degrees( atan(pm_dec/pm_ra) )
     angle_corr = degrees( atan(mu_dec_corr/mu_ra_corr) )
 
-    print(f'\nUncorrected angle = {angle:.1f}°')
-    print(f'Corrected angle = {angle_corr:.1f}°')
+    print(f'\nObserved angle = {angle:.1u}°')
+    print(f'Corrected angle = {angle_corr:.1u}°')
 
     # Calculate the corrected tangential velocity
     v_t = 4.74 * dist * sqrt(mu_l_corr**2 + mu_b_corr**2)
-    print(f'\nV_t = {v_t:.2f} km/s')
+    print(f'\nV_t = {v_t:.1u} km/s')
 
     # Calculate corrected radial velocity
     v_r_corr = v_r - v_r0
-    print(f'V_r = {v_r_corr:.2f} km/s')
+    print(f'V_r = {v_r_corr:.2u} km/s')
 
 
 
