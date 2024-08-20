@@ -50,39 +50,36 @@ def main(source_name, const='W21'):
 
     # Define the transformation matrix between celestial to Galactic coordinates as in: 
     # https://gea.esac.esa.int/archive/documentation/GDR1/Data_processing/chap_cu3ast/sec_cu3ast_intro.html
-    Ag = np.array([[-0.0548755604162154,-0.8734370902348850,-0.4838350155487132],\
+   
+    # Matrix A_G' from Eq. 3.11:
+    Agt = np.array([[-0.0548755604162154,-0.8734370902348850,-0.4838350155487132],\
                   [0.4941094278755837,-0.4448296299600112,0.7469822444972189],\
                   [-0.8676661490190047,-0.1980763734312015,0.4559837761750669]])
 
     dist = 1./parallax
 
-    # Intermediate vector in the Galactic frame
+    # Define the position vectors in ICRS and convert to Galactic:
     cra, sra = cos(ra), sin(ra)
     cd, sd = cos(dec), sin(dec)
-    vector_gal = np.dot(Ag, np.array([cra * cd, sra * cd, sd]))
+    r_icrs = np.array([cra * cd, sra * cd, sd])   # Eq. 3.7
+    r_gal = np.dot(Agt, r_icrs)                   # Eq. 3.9
 
-    # Galactic longitude (l) and latitude (b)
-    l_gal = umath.atan2(vector_gal[1], vector_gal[0])
-    b_gal = umath.atan2(vector_gal[2], sqrt(vector_gal[0]**2 + vector_gal[1]**2))
+    # Galactic longitude (l) and latitude (b), from Eq. 3.13
+    l_gal = umath.atan2(r_gal[1], r_gal[0])   
+    b_gal = umath.atan2(r_gal[2], sqrt(r_gal[0]**2 + r_gal[1]**2))
+    cl, sl = cos(l_gal), sin(l_gal)
+    cb, sb = cos(b_gal), sin(b_gal)
 
-    # Intermediate variables for trigonometric functions
-    cos_l = cos(l_gal)
-    sin_l = sin(l_gal)
-    cos_b = cos(b_gal)
-    sin_b = sin(b_gal)
+    # Auxiliary column matrices from Eqs. 3.14 and 3.15
+    p_icrs = np.array([-sra, cra, 0])
+    q_icrs = np.array([-cra * sd, -sra * sd, cd])
+    p_gal = np.array([-sl, cl, 0])
+    q_gal = np.array([-cl * sb, -sl * sb, cb])
 
-    # Calculate Galactic proper motions using the transformation matrix
-    mul = -sin_l * ((-Ag[0, 0] * sra + Ag[0, 1] * cra) * pm_ra - 
-                          (Ag[0, 0] * cra * cd + Ag[0, 1] * sra * sd - Ag[0, 2] * cd) * pm_dec) + \
-          cos_l * ((-Ag[1, 0] * sra + Ag[1, 1] * cra) * pm_ra - 
-                        (Ag[1, 0] * cra * cd + Ag[1, 1] * sra * sd - Ag[1, 2] * cd) * pm_dec)
-
-    mub = -cos_l * sin_b * ((-Ag[0, 0] * sra + Ag[0, 1] * cra) * pm_ra - 
-                                      (Ag[0, 0] * cra * cd + Ag[0, 1] * sra * sd - Ag[0, 2] * cd) * pm_dec) - \
-          sin_l * sin_b * ((-Ag[1, 0] * sra + Ag[1, 1] * cra) * pm_ra - 
-                                    (Ag[1, 0] * cra * cd + Ag[1, 1] * sra * sd - Ag[1, 2] * cd) * pm_dec) + \
-          cos_b * ((-Ag[2, 0] * sra + Ag[2, 1] * cra) * pm_ra - 
-                        (Ag[2, 0] * cra * cd + Ag[2, 1] * sra * sd - Ag[2, 2] * cd) * pm_dec)
+    # Transform the proper motions to Galactic coordinates
+    mu_icrs = p_icrs * pm_ra + q_icrs * pm_dec                     # Eq. 3.16
+    mu_gal = np.dot(Agt, mu_icrs)                                  # Eq. 3.18
+    mul, mub = np.dot(p_gal.T, mu_gal), np.dot(q_gal.T, mu_gal)    # Eq. 3.20 
 
     print(f'D = {dist:.1u} kpc')
     print(f'(l, b) = ({l_gal*180/np.pi:.1u} deg, {b_gal*180/np.pi:.1u} deg)')
@@ -103,21 +100,12 @@ def main(source_name, const='W21'):
     print(f'Corrected proper motion: \u03BC_l = {mu_l_corr:.1u} mas/yr, \u03BC_b = {mu_b_corr:.1u} mas/yr')
 
     #Calculate mu_ra, mu_dec, and V_tan. We use the transpose of the transformation matrix. 
-    Agt = Ag.T
+    Ag = Agt.T
 
-    # Calculate mu_ra_corr
-    mu_ra_corr = -sra * ( (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr\
-                            - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
-                + cra * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l ) * mu_l_corr\
-                            - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )
-
-    # Calculate mu_dec_corr
-    mu_dec_corr = -cra * sd * ( (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr
-                                - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
-                - sra * sd * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l) * mu_l_corr
-                                - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )\
-                + cd * ( (-Agt[2, 0] * sin_l + Agt[2, 1] * cos_l) * mu_l_corr
-                        - (Agt[2, 0] * cos_l * cos_b + Agt[2, 1] * sin_l * sin_b - Agt[2, 2] * cos_b) * mu_b_corr )
+    # Transform the proper motions to Galactic coordinates
+    mu_gal_corr = p_gal * mu_l_corr + q_gal * mu_b_corr                                       # Eq. 3.17
+    mu_icrs_corr = np.dot(Ag, mu_gal_corr)                                                    # Eq. 3.19
+    mu_ra_corr, mu_dec_corr = np.dot(p_icrs.T, mu_icrs_corr), np.dot(q_icrs.T, mu_icrs_corr)  # Eq. 3.21 
 
     print(f'\nObserved proper motion: \u03BC_ra = {pm_ra:.1u} mas/yr, \u03BC_dec = {pm_dec:.1u} mas/yr')
     print(f'Corrected proper motion: \u03BC_ra = {mu_ra_corr:.1u} mas/yr, \u03BC_dec = {mu_dec_corr:.1u} mas/yr')
