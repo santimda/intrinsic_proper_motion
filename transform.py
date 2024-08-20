@@ -106,20 +106,18 @@ def main(source_name, const='W21'):
     sin_b = sin(b_gal)
 
     # Calculate mu_ra_corr
-    mu_ra_corr = (-sra * (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr
-        - (-Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr
-        + cra * (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l) * mu_l_corr
-        - (-Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr
-    )
+    mu_ra_corr = -sra * ( (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr\
+        - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
+        + cra * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l ) * mu_l_corr\
+        - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )
 
     # Calculate mu_dec_corr
-    mu_dec_corr = (-cra * sd * (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr
-        - (-Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr
-        - sra * sd * (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l) * mu_l_corr
-        - (-Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr
-        + cd * (-Agt[2, 0] * sin_l + Agt[2, 1] * cos_l) * mu_l_corr
-        - (-Agt[2, 0] * cos_l * cos_b + Agt[2, 1] * sin_l * sin_b - Agt[2, 2] * cos_b) * mu_b_corr
-    )
+    mu_dec_corr = -cra * sd * ( (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr
+        - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
+        - sra * sd * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l) * mu_l_corr
+        - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )\
+        + cd * ( (-Agt[2, 0] * sin_l + Agt[2, 1] * cos_l) * mu_l_corr
+        - (Agt[2, 0] * cos_l * cos_b + Agt[2, 1] * sin_l * sin_b - Agt[2, 2] * cos_b) * mu_b_corr )
 
     print(f'\nObserved proper motion: \u03BC_ra = {pm_ra:.1u} mas/yr, \u03BC_dec = {pm_dec:.1u} mas/yr')
     print(f'Corrected proper motion: \u03BC_ra = {mu_ra_corr:.1u} mas/yr, \u03BC_dec = {mu_dec_corr:.1u} mas/yr')
