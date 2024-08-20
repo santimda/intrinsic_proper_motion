@@ -65,17 +65,23 @@ def main(source_name, const='W21'):
     l_gal = umath.atan2(vector_gal[1], vector_gal[0])
     b_gal = umath.atan2(vector_gal[2], sqrt(vector_gal[0]**2 + vector_gal[1]**2))
 
+    # Intermediate variables for trigonometric functions
+    cos_l = cos(l_gal)
+    sin_l = sin(l_gal)
+    cos_b = cos(b_gal)
+    sin_b = sin(b_gal)
+
     # Calculate Galactic proper motions using the transformation matrix
-    mul = -sin(l_gal) * ((-Ag[0, 0] * sra + Ag[0, 1] * cra) * pm_ra - 
+    mul = -sin_l * ((-Ag[0, 0] * sra + Ag[0, 1] * cra) * pm_ra - 
                           (Ag[0, 0] * cra * cd + Ag[0, 1] * sra * sd - Ag[0, 2] * cd) * pm_dec) + \
-          cos(l_gal) * ((-Ag[1, 0] * sra + Ag[1, 1] * cra) * pm_ra - 
+          cos_l * ((-Ag[1, 0] * sra + Ag[1, 1] * cra) * pm_ra - 
                         (Ag[1, 0] * cra * cd + Ag[1, 1] * sra * sd - Ag[1, 2] * cd) * pm_dec)
 
-    mub = -cos(l_gal) * sin(b_gal) * ((-Ag[0, 0] * sra + Ag[0, 1] * cra) * pm_ra - 
+    mub = -cos_l * sin_b * ((-Ag[0, 0] * sra + Ag[0, 1] * cra) * pm_ra - 
                                       (Ag[0, 0] * cra * cd + Ag[0, 1] * sra * sd - Ag[0, 2] * cd) * pm_dec) - \
-          sin(l_gal) * sin(b_gal) * ((-Ag[1, 0] * sra + Ag[1, 1] * cra) * pm_ra - 
+          sin_l * sin_b * ((-Ag[1, 0] * sra + Ag[1, 1] * cra) * pm_ra - 
                                     (Ag[1, 0] * cra * cd + Ag[1, 1] * sra * sd - Ag[1, 2] * cd) * pm_dec) + \
-          cos(b_gal) * ((-Ag[2, 0] * sra + Ag[2, 1] * cra) * pm_ra - 
+          cos_b * ((-Ag[2, 0] * sra + Ag[2, 1] * cra) * pm_ra - 
                         (Ag[2, 0] * cra * cd + Ag[2, 1] * sra * sd - Ag[2, 2] * cd) * pm_dec)
 
     print(f'D = {dist:.1u} kpc')
@@ -99,25 +105,19 @@ def main(source_name, const='W21'):
     #Calculate mu_ra, mu_dec, and V_tan. We use the transpose of the transformation matrix. 
     Agt = Ag.T
 
-    # Intermediate variables for trigonometric functions
-    cos_l = cos(l_gal)
-    sin_l = sin(l_gal)
-    cos_b = cos(b_gal)
-    sin_b = sin(b_gal)
-
     # Calculate mu_ra_corr
     mu_ra_corr = -sra * ( (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr\
-        - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
-        + cra * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l ) * mu_l_corr\
-        - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )
+                            - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
+                + cra * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l ) * mu_l_corr\
+                            - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )
 
     # Calculate mu_dec_corr
     mu_dec_corr = -cra * sd * ( (-Agt[0, 0] * sin_l + Agt[0, 1] * cos_l) * mu_l_corr
-        - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
-        - sra * sd * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l) * mu_l_corr
-        - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )\
-        + cd * ( (-Agt[2, 0] * sin_l + Agt[2, 1] * cos_l) * mu_l_corr
-        - (Agt[2, 0] * cos_l * cos_b + Agt[2, 1] * sin_l * sin_b - Agt[2, 2] * cos_b) * mu_b_corr )
+                                - (Agt[0, 0] * cos_l * cos_b + Agt[0, 1] * sin_l * sin_b - Agt[0, 2] * cos_b) * mu_b_corr )\
+                - sra * sd * ( (-Agt[1, 0] * sin_l + Agt[1, 1] * cos_l) * mu_l_corr
+                                - (Agt[1, 0] * cos_l * cos_b + Agt[1, 1] * sin_l * sin_b - Agt[1, 2] * cos_b) * mu_b_corr )\
+                + cd * ( (-Agt[2, 0] * sin_l + Agt[2, 1] * cos_l) * mu_l_corr
+                        - (Agt[2, 0] * cos_l * cos_b + Agt[2, 1] * sin_l * sin_b - Agt[2, 2] * cos_b) * mu_b_corr )
 
     print(f'\nObserved proper motion: \u03BC_ra = {pm_ra:.1u} mas/yr, \u03BC_dec = {pm_dec:.1u} mas/yr')
     print(f'Corrected proper motion: \u03BC_ra = {mu_ra_corr:.1u} mas/yr, \u03BC_dec = {mu_dec_corr:.1u} mas/yr')
