@@ -139,6 +139,7 @@ def main(source_name, const='W21'):
     v_r_corr = v_r - v_r0
     print(f'V_r = {v_r_corr:.2u} km/s')
 
+    print(f'V = {sqrt(v_r_corr**2 + v_t**2):.2u} km/s')
 
 
 if __name__ == "__main__":
