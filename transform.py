@@ -78,9 +78,9 @@ def main(source_name, const='W21'):
           cos(b_gal) * ((-Ag[2, 0] * sra + Ag[2, 1] * cra) * pm_ra - 
                         (Ag[2, 0] * cra * cd + Ag[2, 1] * sra * sd - Ag[2, 2] * cd) * pm_dec)
 
-    print(f'D = {dist} kpc')
-    print(f'(l, b) = ({l_gal*180/np.pi:.4f} deg, {b_gal*180/np.pi:.4f} deg)')
-    print('\nObserved proper motion: \u03BC_l = {mul:.3f} mas/yr, \u03BC_b = {mub:.3f} mas/yr')
+    print(f'D = {dist:.1u} kpc')
+    print(f'(l, b) = ({l_gal*180/np.pi:.1u} deg, {b_gal*180/np.pi:.1u} deg)')
+    print(f'\nObserved proper motion: \u03BC_l = {mul:.1u} mas/yr, \u03BC_b = {mub:.1u} mas/yr')
 
     A, B, C, K, U, V, W = oort_constants(const)
 
@@ -94,7 +94,7 @@ def main(source_name, const='W21'):
     mu_l_corr = mul - mu_l0
     mu_b_corr = mub - mu_b0
 
-    print('Corrected proper motion: \u03BC_l = {mu_l_corr:.1u} mas/yr, \u03BC_b = {mu_b_corr:.1u} mas/yr')
+    print(f'Corrected proper motion: \u03BC_l = {mu_l_corr:.1u} mas/yr, \u03BC_b = {mu_b_corr:.1u} mas/yr')
 
     #Calculate mu_ra, mu_dec, and V_tan. We use the transpose of the transformation matrix. 
     Agt = Ag.T
@@ -133,7 +133,7 @@ def main(source_name, const='W21'):
 
     # Calculate the corrected tangential velocity
     v_t = 4.74 * dist * sqrt(mu_l_corr**2 + mu_b_corr**2)
-    print(f'\nV_t = {v_t:.1u} km/s')
+    print(f'\nV_t = {v_t:.2u} km/s')
 
     # Calculate corrected radial velocity
     v_r_corr = v_r - v_r0
