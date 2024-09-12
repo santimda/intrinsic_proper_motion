@@ -18,7 +18,6 @@ Note that there are different options for the Oort constants which can affect th
 This package requires the following Python libraries:
 
     numpy
-    matplotlib
     uncertainties
     astropy
 

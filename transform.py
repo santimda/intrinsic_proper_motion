@@ -1,6 +1,5 @@
 import argparse
 import numpy as np
-import matplotlib.pyplot as plt
 import ast
 from uncertainties import ufloat, umath
 from uncertainties.umath import *
