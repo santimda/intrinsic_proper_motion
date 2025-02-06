@@ -109,12 +109,12 @@ def main(source_name, const='W21'):
     print(f'\nObserved proper motion: \u03BC_ra = {pm_ra:.1u} mas/yr, \u03BC_dec = {pm_dec:.1u} mas/yr')
     print(f'Corrected proper motion: \u03BC_ra = {mu_ra_corr:.1u} mas/yr, \u03BC_dec = {mu_dec_corr:.1u} mas/yr')
 
-    # Calculate proper motion angle before and after correction for Galactic rotation 
-    angle = degrees( atan(pm_dec/pm_ra) )
-    angle_corr = degrees( atan(mu_dec_corr/mu_ra_corr) )
+    # Calculate proper motion position angle (PA) before and after correction for Galactic rotation 
+    PA = calculate_pa(pm_ra, pm_dec)
+    PA_corr = calculate_pa(mu_ra_corr, mu_dec_corr) 
 
-    print(f'\nObserved angle = {angle:.1u}°')
-    print(f'Corrected angle = {angle_corr:.1u}°')
+    print(f'\nObserved PA = {PA:.1u}°')
+    print(f'Corrected PA = {PA_corr:.1u}°')
 
     # Calculate the corrected tangential velocity
     v_t = 4.74 * dist * sqrt(mu_l_corr**2 + mu_b_corr**2)

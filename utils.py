@@ -1,4 +1,5 @@
-from uncertainties.umath import cos, sin
+from numpy import pi
+from uncertainties.umath import cos, sin, atan2
 
 def galactic_velocity(dist, b, l, A, B, C, K, U, V, W):
     """
@@ -106,3 +107,25 @@ def oort_constants(model):
         raise ValueError(f"ERROR! Model '{model}' is not recognized. Choose from 'C07', 'B19', 'W21'.")
 
     return A, B, C, K, U, V, W
+
+
+
+def calculate_pa(pm_ra, pm_dec):
+    """
+    Calculate the position angle (PA) from proper motions in RA and DEC.
+
+    Parameters:
+        pm_ra (ufloat): Proper motion in RA (mas/yr).
+        pm_dec (ufloat): Proper motion in DEC (mas/yr), already multiplied by cos(delta).
+
+    Returns:
+        pa (ufloat): Position angle in degrees (east of north), with propagated uncertainty.
+    """
+
+    # Calculate position angle (PA) in degrees using umath for uncertainty propagation
+    pa = atan2(pm_ra, pm_dec) * (180./pi)
+
+    # Ensure PA is in the range [0, 360)
+    pa = (pa + 360) % 360
+
+    return pa
