@@ -1,0 +1,12 @@
+{'ra':207.258155,
+'ra_err':0.1,
+'dec':-28.368021,
+'dec_err':0.1,
+'parallax':11.0,
+'parallax_err':0.1,
+'mu_ra_cosdec':-51.77,
+'mu_ra_cosdec_err':1.30,
+'mu_dec':-62.0,
+'mu_dec_err':2.5,
+'V_r':10,
+'V_r_err':10}
