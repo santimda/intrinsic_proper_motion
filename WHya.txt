@@ -8,5 +8,5 @@
 'mu_ra_cosdec_err':1.30,
 'mu_dec':-62.0,
 'mu_dec_err':2.5,
-'V_r':10,
+'V_r':30,
 'V_r_err':10}
